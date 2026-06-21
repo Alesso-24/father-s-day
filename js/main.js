@@ -5,31 +5,6 @@
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ═══════════════════════════════════════════
-   YOUTUBE IFRAME API — global (debe estar antes de cargar el script)
-═══════════════════════════════════════════ */
-let _ytPlayer = null;
-let _ytPlayerReady = false;
-let _ytPendingPlay = false;
-
-window.onYouTubeIframeAPIReady = function () {
-  _ytPlayer = new YT.Player('ytPlayerEl', {
-    videoId: '8MV_hM0XeAU',       /* Samy Galí — ALBUM COMPLETO: Sonidos al Cielo Vol.1 */
-    playerVars: {
-      autoplay:        0,
-      controls:        1,          /* controles visibles — requerido por ToS de YouTube */
-      rel:             0,
-      modestbranding:  1,
-      iv_load_policy:  3,
-    },
-    events: {
-      onReady() {
-        _ytPlayerReady = true;
-        if (_ytPendingPlay) { _ytPlayer.playVideo(); _ytPendingPlay = false; }
-      },
-    },
-  });
-};
 
 /* ═══════════════════════════════════════════
    1. LENIS SMOOTH SCROLL
@@ -558,53 +533,55 @@ function setupCierre() {
 }
 
 /* ═══════════════════════════════════════════
-   18. MÚSICA — YouTube IFrame (Samy Galí)
-   Carga el álbum "Sonidos al Cielo Vol.1" completo
+   18. MÚSICA — No Hay Lugar Más Alto · Samy Galí
+   <audio> puro: funciona en todos los dispositivos sin video
 ═══════════════════════════════════════════ */
 function setupMusic() {
-  const btn      = document.getElementById('musicBtn');
-  const player   = document.getElementById('musicPlayer');
-  const closeBtn = document.getElementById('mpClose');
-  const play     = btn?.querySelector('.play-icon');
-  const pause    = btn?.querySelector('.pause-icon');
-  if (!btn || !player) return;
+  const btn   = document.getElementById('musicBtn');
+  const audio = document.getElementById('bgMusic');
+  const play  = btn?.querySelector('.play-icon');
+  const pause = btn?.querySelector('.pause-icon');
+  if (!btn || !audio) return;
+
+  /* Ocultar botón si el archivo no está disponible */
+  audio.addEventListener('error', () => {
+    btn.style.opacity = '0.3';
+    btn.title = 'Archivo de música no encontrado';
+  }, { once: true });
 
   let playing = false;
 
-  /* Cargar YouTube IFrame API dinámicamente */
-  const ytTag = document.createElement('script');
-  ytTag.src   = 'https://www.youtube.com/iframe_api';
-  document.head.appendChild(ytTag);
-
-  function doPlay() {
-    if (_ytPlayerReady) {
-      _ytPlayer.playVideo();
-    } else {
-      _ytPendingPlay = true;
-    }
-  }
-
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', async () => {
     if (!playing) {
-      player.classList.add('visible');
-      doPlay();
-      playing = true;
-      play.classList.add('hidden');
-      pause.classList.remove('hidden');
+      try {
+        await audio.play();
+        playing = true;
+        play.classList.add('hidden');
+        pause.classList.remove('hidden');
+        /* Fade in suave */
+        audio.volume = 0;
+        let v = 0;
+        const fadeIn = setInterval(() => {
+          v = Math.min(1, v + 0.04);
+          audio.volume = v;
+          if (v >= 1) clearInterval(fadeIn);
+        }, 60);
+      } catch (e) { /* autoplay bloqueado o archivo faltante */ }
     } else {
-      _ytPlayer?.pauseVideo();
-      playing = false;
-      play.classList.remove('hidden');
-      pause.classList.add('hidden');
+      /* Fade out suave antes de pausar */
+      let v = audio.volume;
+      const fadeOut = setInterval(() => {
+        v = Math.max(0, v - 0.06);
+        audio.volume = v;
+        if (v <= 0) {
+          clearInterval(fadeOut);
+          audio.pause();
+          playing = false;
+          play.classList.remove('hidden');
+          pause.classList.add('hidden');
+        }
+      }, 60);
     }
-  });
-
-  closeBtn?.addEventListener('click', () => {
-    _ytPlayer?.pauseVideo();
-    player.classList.remove('visible');
-    playing = false;
-    play.classList.remove('hidden');
-    pause.classList.add('hidden');
   });
 }
 
