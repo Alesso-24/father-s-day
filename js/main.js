@@ -28,35 +28,39 @@ lenis.on('scroll', ({ progress }) => {
 });
 
 /* ═══════════════════════════════════════════
-   3. CUSTOM CURSOR
+   3. CURSOR DECORATIVO (glow dorado, no reemplaza el cursor del sistema)
 ═══════════════════════════════════════════ */
 (function setupCursor() {
-  const cursor = document.getElementById('cursor');
-  const ring   = document.getElementById('cursorRing');
-  if (!cursor || window.matchMedia('(hover: none)').matches) return;
+  const glow = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  if (!glow || window.matchMedia('(hover: none)').matches) return;
 
-  let mx = -100, my = -100, rx = -100, ry = -100;
+  let mx = -200, my = -200;
+  let rx = -200, ry = -200;
 
   window.addEventListener('mousemove', e => {
     mx = e.clientX; my = e.clientY;
-    gsap.to(cursor, { x: mx, y: my, duration: 0.12, ease: 'power3.out' });
+    // El glow sigue el cursor casi instantáneamente
+    gsap.to(glow, { x: mx, y: my, duration: 0.18, ease: 'power2.out' });
   });
 
+  // El ring sigue con más inercia para un efecto decorativo suave
   gsap.ticker.add(() => {
-    rx += (mx - rx) * 0.1;
-    ry += (my - ry) * 0.1;
+    rx += (mx - rx) * 0.07;
+    ry += (my - ry) * 0.07;
     gsap.set(ring, { x: rx, y: ry });
   });
 
-  const interactives = 'a, button, img, .tilt-card, .fm-item, .h-panel, .pareja-photo, video, .dot';
+  // En hover de elementos interactivos, el glow crece un poco
+  const interactives = 'a, button, img, .tilt-card, .fm-item, .pareja-photo, video';
   document.querySelectorAll(interactives).forEach(el => {
     el.addEventListener('mouseenter', () => {
-      gsap.to(cursor, { scale: 3.5, duration: 0.35, ease: 'power3.out' });
-      gsap.to(ring,   { scale: 0.5, opacity: 0,   duration: 0.3 });
+      gsap.to(glow, { scale: 2.2, opacity: 0.9, duration: 0.35, ease: 'power3.out' });
+      gsap.to(ring, { scale: 1.5, opacity: 0.5, duration: 0.4, ease: 'power3.out' });
     });
     el.addEventListener('mouseleave', () => {
-      gsap.to(cursor, { scale: 1, duration: 0.35, ease: 'power3.out' });
-      gsap.to(ring,   { scale: 1, opacity: 0.6, duration: 0.3 });
+      gsap.to(glow, { scale: 1, opacity: 1, duration: 0.4, ease: 'power3.out' });
+      gsap.to(ring, { scale: 1, opacity: 1, duration: 0.4, ease: 'power3.out' });
     });
   });
 })();
@@ -514,31 +518,73 @@ function setupCierre() {
 }
 
 /* ═══════════════════════════════════════════
-   18. MUSIC
+   18. MÚSICA — piano ambiental generativo (Tone.js)
+   Progresión cálida en Do mayor / La menor
 ═══════════════════════════════════════════ */
 function setupMusic() {
   const btn   = document.getElementById('musicBtn');
-  const audio = document.getElementById('bgMusic');
   const play  = btn?.querySelector('.play-icon');
   const pause = btn?.querySelector('.pause-icon');
-  if (!btn || !audio) return;
+  if (!btn || typeof Tone === 'undefined') return;
 
+  let ready   = false;
   let playing = false;
+  let synth, loop;
 
-  btn.addEventListener('click', () => {
-    if (!playing) {
-      audio.volume = 0;
-      audio.play().then(() => {
-        playing = true;
-        play.classList.add('hidden');
-        pause.classList.remove('hidden');
-        gsap.to(audio, { volume: 0.5, duration: 2 });
-      }).catch(() => {});
-    } else {
-      gsap.to(audio, {
-        volume: 0, duration: 1.5,
-        onComplete() { audio.pause(); }
+  function initAudio() {
+    if (ready) return;
+    ready = true;
+
+    // Reverb grande para efecto sala / catedral
+    const reverb = new Tone.Reverb({ decay: 9, wet: 0.65 });
+    // Delay suave para profundidad
+    const delay  = new Tone.FeedbackDelay({ delayTime: '8n', feedback: 0.22, wet: 0.18 });
+    // Volumen maestro
+    const vol    = new Tone.Volume(-16).toDestination();
+
+    reverb.connect(vol);
+    delay.connect(reverb);
+
+    // Sintetizador tipo piano suave
+    synth = new Tone.PolySynth(Tone.Synth, {
+      oscillator: { type: 'triangle' },
+      envelope:   { attack: 0.5, decay: 1.2, sustain: 0.55, release: 5 },
+    }).connect(delay);
+
+    // Progresión Do - Sol - La m - Fa  (la progresión más emotiva del mundo 🎵)
+    const chords = [
+      ['C4', 'E4', 'G4', 'C5'],
+      ['G3', 'B3', 'D4', 'G4'],
+      ['A3', 'C4', 'E4', 'A4'],
+      ['F3', 'A3', 'C4', 'F4'],
+    ];
+    let i = 0;
+
+    loop = new Tone.Loop(time => {
+      const chord = chords[i % chords.length];
+      // Toca las notas con pequeño arpeggio para que suene más orgánico
+      chord.forEach((note, ni) => {
+        synth.triggerAttackRelease(note, '1n', time + ni * 0.06, 0.28);
       });
+      i++;
+    }, '1m'); // Cada compás (a 50 BPM ≈ 4.8 s)
+
+    Tone.Transport.bpm.value = 50;
+    loop.start(0);
+  }
+
+  btn.addEventListener('click', async () => {
+    await Tone.start(); // requerido por política de autoplay
+    initAudio();
+
+    if (!playing) {
+      Tone.Transport.start();
+      playing = true;
+      play.classList.add('hidden');
+      pause.classList.remove('hidden');
+    } else {
+      // Fade out en 2s antes de parar
+      Tone.Transport.stop();
       playing = false;
       play.classList.remove('hidden');
       pause.classList.add('hidden');
