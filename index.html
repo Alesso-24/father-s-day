@@ -3,235 +3,359 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Feliz Día del Padre</title>
+  <title>Para ti, Papá — Feliz Día del Padre</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <!-- Music button -->
-  <button class="music-btn" id="musicBtn" aria-label="Reproducir música">
-    <svg class="music-icon play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
-    <svg class="music-icon pause-icon hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-  </button>
+  <!-- GRAIN OVERLAY -->
+  <svg class="grain" aria-hidden="true">
+    <filter id="grain-f">
+      <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#grain-f)"/>
+  </svg>
 
+  <!-- PRELOADER -->
+  <div id="preloader">
+    <div class="pre-inner">
+      <div class="pre-heart">♡</div>
+      <p class="pre-text">Para ti, Papá</p>
+    </div>
+    <div class="pre-bar"></div>
+  </div>
+
+  <!-- CUSTOM CURSOR (desktop) -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- SCROLL PROGRESS -->
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <!-- NAV DOTS -->
+  <nav class="nav-dots" id="navDots" aria-label="Secciones">
+    <span class="dot active" data-tip="Inicio"></span>
+    <span class="dot" data-tip="Un tributo"></span>
+    <span class="dot" data-tip="Contigo"></span>
+    <span class="dot" data-tip="Lo que admiro"></span>
+    <span class="dot" data-tip="Familia"></span>
+    <span class="dot" data-tip="Tú y mamá"></span>
+    <span class="dot" data-tip="Momentos"></span>
+    <span class="dot" data-tip="La carta"></span>
+    <span class="dot" data-tip="Gracias"></span>
+  </nav>
+
+  <!-- MUSIC BUTTON -->
+  <button class="music-btn" id="musicBtn" aria-label="Música">
+    <svg class="music-icon play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+    <svg class="music-icon pause-icon hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+  </button>
   <audio id="bgMusic" loop>
-    <source src="https://www.bensound.com/bensound-music/bensound-memories.mp3" type="audio/mpeg" />
+    <source src="https://www.bensound.com/bensound-music/bensound-memories.mp3" type="audio/mpeg"/>
   </audio>
 
-  <!-- ═══ HERO ═══ -->
-  <section class="hero" id="hero">
-    <div class="hero-img-wrap">
-      <img src="images/hero-papa.jpg" alt="Papá" class="hero-img" />
-      <div class="hero-overlay"></div>
+  <!-- ═══════════════════════════════════
+       01. HERO
+  ═══════════════════════════════════ -->
+  <section class="hero section" id="s0" data-section="0">
+    <div class="hero-left">
+      <div class="hero-text-wrap">
+        <p class="hero-eyebrow">
+          <span class="h-word">Para</span>
+          <span class="h-word">ti,</span>
+        </p>
+        <h1 class="hero-title">
+          <span class="h-line"><em>Papá.</em></span>
+        </h1>
+        <p class="hero-date">21 de Junio · 2026</p>
+        <div class="hero-scroll-hint">
+          <span class="scroll-line"></span>
+          <span class="scroll-label">Scroll</span>
+        </div>
+      </div>
     </div>
-    <div class="hero-content">
-      <p class="hero-sub reveal-word">Para ti,</p>
-      <h1 class="hero-title">
-        <span class="line-wrap"><span class="hero-line">Papá.</span></span>
-      </h1>
-      <p class="hero-date reveal-word">21 de Junio, 2026</p>
+    <div class="hero-right">
+      <div class="hero-img-wrap">
+        <img src="images/hero-papa.jpg" alt="Papá" class="hero-img" />
+      </div>
+      <div class="hero-right-overlay"></div>
     </div>
-    <div class="scroll-indicator">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
+    <div class="hero-number">01 <span>/ 09</span></div>
   </section>
 
-  <!-- ═══ DEDICATORIA ═══ -->
-  <section class="dedicatoria" id="dedicatoria">
-    <div class="container">
-      <div class="split-text dedication-text">
-        Hay personas que con solo estar presentes
-        hacen del mundo un lugar mejor.
-        Tú eres una de esas personas.
+  <!-- ═══════════════════════════════════
+       02. APERTURA — tributo
+  ═══════════════════════════════════ -->
+  <section class="apertura section" id="s1" data-section="1">
+    <div class="apertura-inner">
+      <div class="big-words" id="bigWords">
+        <div class="bw-line"><span class="bw-mask"><span class="bw-text">Hay personas</span></span></div>
+        <div class="bw-line"><span class="bw-mask"><span class="bw-text italic">que con solo</span></span></div>
+        <div class="bw-line"><span class="bw-mask"><span class="bw-text">estar presentes</span></span></div>
+        <div class="bw-line"><span class="bw-mask"><span class="bw-text italic">hacen del mundo</span></span></div>
+        <div class="bw-line"><span class="bw-mask"><span class="bw-text">un lugar mejor.</span></span></div>
+      </div>
+      <div class="apertura-sub">
+        <p>Tú eres una de esas personas, Papá.</p>
       </div>
     </div>
+    <div class="apertura-number">02</div>
   </section>
 
-  <!-- ═══ EL HOMBRE QUE ADMIRO ═══ -->
-  <section class="admiro" id="admiro">
-    <div class="admiro-inner">
-
-      <div class="admiro-card">
-        <div class="admiro-photo-wrap">
-          <img src="images/papa-trabajo.jpg" alt="Papá" class="admiro-photo parallax-img" />
-        </div>
-        <div class="admiro-text">
-          <span class="admiro-number">01</span>
-          <h2>Siempre presente</h2>
-          <p>En un mundo donde muchos padres se ausentan, tú elegiste quedarte. Siempre tienes tiempo para nosotros — para escuchar, para abrazar, para estar.</p>
-        </div>
-      </div>
-
-      <div class="admiro-card reverse">
-        <div class="admiro-photo-wrap">
-          <img src="images/amigos-3.jpg" alt="Papá con amigos" class="admiro-photo parallax-img" />
-        </div>
-        <div class="admiro-text">
-          <span class="admiro-number">02</span>
-          <h2>Siempre positivo</h2>
-          <p>Siempre encuentras el lado bueno de las cosas, incluso cuando el camino se pone difícil. Esa actitud me ha enseñado más de lo que imaginas.</p>
-        </div>
-      </div>
-
-      <div class="admiro-card">
-        <div class="admiro-photo-wrap">
-          <img src="images/papa-cocina.jpg" alt="Papá en casa" class="admiro-photo parallax-img" />
-        </div>
-        <div class="admiro-text">
-          <span class="admiro-number">03</span>
-          <h2>El mejor de todos</h2>
-          <p>Eres el tipo de papá que hace reír a todos y que llena cada momento de hogar, de calidez, de vida. No hay nadie como tú.</p>
-        </div>
-      </div>
-
+  <!-- ═══════════════════════════════════
+       03. HORIZONTAL GALLERY — Contigo
+  ═══════════════════════════════════ -->
+  <section class="h-scroll-section section" id="s2" data-section="2">
+    <div class="h-title-fixed">
+      <span class="h-title-label">Contigo</span>
+      <span class="h-title-count"><span id="hCurrent">01</span> / 05</span>
     </div>
-  </section>
-
-  <!-- ═══ NUESTRA FAMILIA ═══ -->
-  <section class="familia" id="familia">
-    <div class="container">
-      <div class="section-header">
-        <h2 class="section-title split-title">Nuestra familia</h2>
-        <p class="section-sub">Los momentos más felices siempre han sido contigo.</p>
+    <div class="h-panels-wrapper" id="hPanelsWrapper">
+      <div class="h-panel" data-idx="1">
+        <div class="h-panel-img">
+          <img src="images/familia-navidad.jpg" alt="Navidad" />
+        </div>
+        <div class="h-panel-caption">
+          <span class="h-cap-num">01</span>
+          <h3>Los mejores momentos<br/>siempre son en familia</h3>
+        </div>
       </div>
-      <div class="familia-grid">
-        <div class="fgrid-item big reveal-up">
-          <img src="images/familia-navidad.jpg" alt="Navidad en familia" />
-          <div class="fgrid-caption">Navidad juntos</div>
+      <div class="h-panel" data-idx="2">
+        <div class="h-panel-img">
+          <img src="images/familia-playa.jpg" alt="Playa" />
         </div>
-        <div class="fgrid-item reveal-up delay-1">
-          <img src="images/familia-selfie.jpg" alt="Selfie familiar" />
-          <div class="fgrid-caption">Todos juntos</div>
+        <div class="h-panel-caption">
+          <span class="h-cap-num">02</span>
+          <h3>Donde tú estás,<br/>ahí está el hogar</h3>
         </div>
-        <div class="fgrid-item reveal-up delay-2">
-          <img src="images/familia-playa.jpg" alt="Familia en la playa" />
-          <div class="fgrid-caption">Vacaciones</div>
+      </div>
+      <div class="h-panel" data-idx="3">
+        <div class="h-panel-img">
+          <img src="images/convivio-carne.jpg" alt="Carne asada" />
         </div>
-        <div class="fgrid-item reveal-up delay-1">
-          <img src="images/familia-teleferico.jpg" alt="En el teleférico" />
-          <div class="fgrid-caption">Aventuras</div>
+        <div class="h-panel-caption">
+          <span class="h-cap-num">03</span>
+          <h3>El rey indiscutible<br/>de la parrilla 🔥</h3>
         </div>
-        <div class="fgrid-item big reveal-up delay-2">
-          <img src="images/familia-cena.jpg" alt="Cena familiar" />
-          <div class="fgrid-caption">Mesa llena, corazón lleno</div>
+      </div>
+      <div class="h-panel" data-idx="4">
+        <div class="h-panel-img">
+          <img src="images/familia-noche.jpg" alt="Noche" />
         </div>
-        <div class="fgrid-item reveal-up">
-          <img src="images/familia-noche.jpg" alt="Noche en familia" />
-          <div class="fgrid-caption">Noches de convivio</div>
+        <div class="h-panel-caption">
+          <span class="h-cap-num">04</span>
+          <h3>Cada salida contigo<br/>se vuelve recuerdo</h3>
         </div>
-        <div class="fgrid-item reveal-up delay-1">
-          <img src="images/familia-malecon.jpg" alt="En el malecón" />
-          <div class="fgrid-caption">Malecón de noche</div>
+      </div>
+      <div class="h-panel" data-idx="5">
+        <div class="h-panel-img">
+          <img src="images/familia-selfie.jpg" alt="Selfie" />
+        </div>
+        <div class="h-panel-caption">
+          <span class="h-cap-num">05</span>
+          <h3>Juntos,<br/>siempre</h3>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ═══ TÚ Y MAMÁ ═══ -->
-  <section class="pareja" id="pareja">
-    <div class="pareja-bg-text">AMOR</div>
-    <div class="container">
-      <div class="section-header center">
-        <h2 class="section-title split-title">Tú y mamá</h2>
-        <p class="section-sub">El amor que se tienen es el primer hogar que conocimos.</p>
+  <!-- ═══════════════════════════════════
+       04. LO QUE ADMIRO
+  ═══════════════════════════════════ -->
+  <section class="admiro section" id="s3" data-section="3">
+    <div class="admiro-header">
+      <p class="section-eyebrow">Lo que admiro de ti</p>
+      <h2 class="section-title-lg">Tres cosas<br/><em>que te definen</em></h2>
+    </div>
+
+    <div class="admiro-row">
+      <div class="admiro-num-wrap">
+        <span class="admiro-num" data-target="01">01</span>
+      </div>
+      <div class="admiro-photo-wrap clip-reveal">
+        <img src="images/papa-trabajo.jpg" alt="Siempre presente" class="parallax-img" />
+      </div>
+      <div class="admiro-copy">
+        <h3 class="admiro-heading">Siempre<br/>presente</h3>
+        <p>En un mundo donde muchos padres se ausentan, tú elegiste quedarte. Siempre tienes tiempo para la familia — para escuchar, para abrazar, para estar. Eso vale más que cualquier regalo.</p>
+      </div>
+    </div>
+
+    <div class="admiro-row reverse">
+      <div class="admiro-num-wrap">
+        <span class="admiro-num" data-target="02">02</span>
+      </div>
+      <div class="admiro-photo-wrap clip-reveal">
+        <img src="images/amigos-3.jpg" alt="Positivo" class="parallax-img" />
+      </div>
+      <div class="admiro-copy">
+        <h3 class="admiro-heading">Siempre<br/>positivo</h3>
+        <p>Siempre encuentras el lado bueno de las cosas, incluso cuando el camino se pone difícil. Esa actitud me ha enseñado más de lo que imaginas.</p>
+      </div>
+    </div>
+
+    <div class="admiro-row">
+      <div class="admiro-num-wrap">
+        <span class="admiro-num" data-target="03">03</span>
+      </div>
+      <div class="admiro-photo-wrap clip-reveal">
+        <img src="images/papa-rancho.jpg" alt="Cariñoso" class="parallax-img" />
+      </div>
+      <div class="admiro-copy">
+        <h3 class="admiro-heading">El más<br/>cariñoso</h3>
+        <p>El amor con que tratas a mamá, a mi hermana y a mí — ese cariño sin condiciones — me ha mostrado lo que significa amar de verdad. Me enseñaste a seguir a Dios, y esa es la herencia más grande.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════
+       05. FAMILIA
+  ═══════════════════════════════════ -->
+  <section class="familia section" id="s4" data-section="4">
+    <div class="familia-header">
+      <p class="section-eyebrow">La familia que nos diste</p>
+      <h2 class="section-title-lg">Nuestra<br/><em>historia</em></h2>
+    </div>
+    <div class="familia-masonry">
+      <div class="fm-item tall clip-reveal">
+        <img src="images/familia-cena.jpg" alt="Cena familiar" />
+        <div class="fm-label">Mesa llena, corazón lleno</div>
+      </div>
+      <div class="fm-item clip-reveal">
+        <img src="images/familia-teleferico.jpg" alt="Teleférico" />
+        <div class="fm-label">Aventuras contigo</div>
+      </div>
+      <div class="fm-item clip-reveal">
+        <img src="images/familia-malecon.jpg" alt="Malecón" />
+        <div class="fm-label">Noches de malecón</div>
+      </div>
+      <div class="fm-item wide clip-reveal">
+        <img src="images/familia-playa.jpg" alt="Playa" />
+        <div class="fm-label">Vacaciones juntos</div>
+      </div>
+      <div class="fm-item clip-reveal">
+        <img src="images/convivio-pastel.jpg" alt="Convivio" />
+        <div class="fm-label">Tus amigos, tu familia</div>
+      </div>
+      <div class="fm-item tall clip-reveal">
+        <img src="images/papa-trabajo.jpg" alt="Trabajo" />
+        <div class="fm-label">El hombre que trabaja por nosotros</div>
+      </div>
+    </div>
+    <!-- Marquee -->
+    <div class="marquee-wrap" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Feliz Día del Padre · Te Queremos · Gracias por Todo · </span>
+        <span>Feliz Día del Padre · Te Queremos · Gracias por Todo · </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════
+       06. TÚ Y MAMÁ
+  ═══════════════════════════════════ -->
+  <section class="pareja section" id="s5" data-section="5">
+    <div class="pareja-bg-word" aria-hidden="true">AMOR</div>
+    <div class="pareja-inner">
+      <div class="pareja-left">
+        <p class="section-eyebrow light">Un amor que nos enseñó</p>
+        <h2 class="section-title-lg light">Tú<br/>y mamá</h2>
+        <p class="pareja-copy">El amor con que se tratan el uno al otro fue el primer hogar que conocimos. Gracias por mostrarnos cómo se ama de verdad.</p>
       </div>
       <div class="pareja-photos">
-        <div class="pareja-photo reveal-left">
-          <img src="images/papa-mama-parque.jpg" alt="Papá y mamá en el parque" />
+        <div class="pareja-photo clip-reveal tilt-card">
+          <img src="images/papa-mama-parque.jpg" alt="En el parque" />
         </div>
-        <div class="pareja-photo reveal-right">
-          <img src="images/papa-mama-iglesia.jpg" alt="Papá y mamá en la iglesia" />
+        <div class="pareja-photo clip-reveal tilt-card offset">
+          <img src="images/papa-mama-iglesia.jpg" alt="En la iglesia" />
         </div>
-        <div class="pareja-photo reveal-left">
-          <img src="images/papa-mama-banca.jpg" alt="Papá y mamá en la banca" />
+        <div class="pareja-photo clip-reveal tilt-card">
+          <img src="images/papa-mama-banca.jpg" alt="En la banca" />
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ═══ MOMENTOS — convivios ═══ -->
-  <section class="momentos" id="momentos">
+  <!-- ═══════════════════════════════════
+       07. MOMENTOS + VIDEO
+  ═══════════════════════════════════ -->
+  <section class="momentos section" id="s6" data-section="6">
     <div class="container">
-      <div class="section-header">
-        <h2 class="section-title split-title">Momentos que guardamos</h2>
+      <div class="momentos-header">
+        <p class="section-eyebrow">Momentos que guardamos</p>
+        <h2 class="section-title-lg">Los recuerdos<br/><em>de siempre</em></h2>
       </div>
       <div class="momentos-grid">
-        <div class="mgrid-item reveal-scale">
-          <img src="images/convivio-carne.jpg" alt="La carne asada" />
-          <div class="mgrid-overlay"><span>La carne asada 🔥</span></div>
+        <div class="tilt-card clip-reveal momento-item">
+          <img src="images/papa-cocina.jpg" alt="En casa" />
+          <div class="momento-label">El jefe en casa 😄</div>
         </div>
-        <div class="mgrid-item reveal-scale delay-1">
-          <img src="images/convivio-pastel.jpg" alt="Con los amigos" />
-          <div class="mgrid-overlay"><span>Con los amigos</span></div>
+        <div class="tilt-card clip-reveal momento-item">
+          <img src="images/papa-trabajo.jpg" alt="Trabajo" />
+          <div class="momento-label">El que trabaja por nosotros</div>
         </div>
-        <div class="mgrid-item reveal-scale delay-2">
-          <img src="images/papa-rancho.jpg" alt="En el rancho" />
-          <div class="mgrid-overlay"><span>En el rancho</span></div>
+        <div class="tilt-card clip-reveal momento-item">
+          <img src="images/familia-navidad.jpg" alt="Navidad" />
+          <div class="momento-label">Navidades juntos</div>
         </div>
+      </div>
+      <div class="video-wrap clip-reveal">
+        <div class="video-play-btn" id="videoPlayBtn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <video id="mainVideo" src="images/video-familia.mp4" poster="images/familia-noche.jpg" preload="metadata" playsinline></video>
+        <div class="video-caption">Un momento de familia</div>
       </div>
     </div>
   </section>
 
-  <!-- ═══ VIDEO ═══ -->
-  <section class="video-section" id="video-section">
-    <div class="container">
-      <div class="section-header center">
-        <h2 class="section-title split-title">En movimiento</h2>
-        <p class="section-sub">Algunos momentos son demasiado vivos para quedarse en una foto.</p>
+  <!-- ═══════════════════════════════════
+       08. LA CARTA
+  ═══════════════════════════════════ -->
+  <section class="carta section" id="s7" data-section="7">
+    <div class="carta-deco" aria-hidden="true">"</div>
+    <div class="carta-inner">
+      <div class="carta-meta">
+        <span class="carta-fecha">Junio · 2026</span>
+        <span class="carta-linea"></span>
+        <h2 class="carta-titulo">Una carta<br/><em>para ti</em></h2>
       </div>
-      <div class="video-wrap reveal-up">
-        <video src="images/video-familia.mp4" controls playsinline preload="metadata" poster="images/familia-noche.jpg"></video>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══ LA CARTA ═══ -->
-  <section class="carta" id="carta">
-    <div class="carta-bg"></div>
-    <div class="container">
-      <div class="carta-inner reveal-up">
-        <div class="carta-header">
-          <span class="carta-fecha">Junio 2026</span>
-          <h2 class="carta-titulo">Una carta para ti</h2>
-        </div>
-        <div class="carta-texto typewriter-text">
-          <p>Papá,</p>
-          <p>Escribir esta carta no es fácil, porque las palabras nunca parecen ser suficientes para describir todo lo que representas para mí.</p>
-          <p>Admiro tu forma de ver la vida — siempre encuentras el lado bueno de las cosas, incluso cuando el camino se pone difícil. Esa actitud me ha enseñado más de lo que imaginas.</p>
-          <p>Admiro cómo nunca nos has faltado. Siempre tienes tiempo para la familia, para escuchar, para abrazar, para estar presente. En un mundo donde muchos padres se ausentan, tú has elegido quedarte, y eso vale más que cualquier cosa.</p>
-          <p>Admiro el amor con el que tratas a mamá, a mi hermana y a mí. Ese cariño que das sin medirlo, sin condiciones, me ha mostrado lo que significa amar de verdad.</p>
-          <p>Me enseñaste a seguir a Dios, y esa es la herencia más grande que un padre puede darle a su hijo. Gracias por ponerme sobre tus hombros cuando no podía ver más allá.</p>
-          <p>Sé que te has sacrificado muchas veces — por nosotros, y especialmente por mí. Quizás no siempre te lo he dicho, pero lo sé, lo siento, y nunca lo voy a olvidar.</p>
-          <p>Hoy quiero que sepas que soy quien soy gracias a ti. Tu ejemplo vive en mí.</p>
-          <p class="carta-cierre">Feliz Día del Padre, Papá.<br/>Te amo más de lo que puedo expresar.</p>
-          <p class="carta-firma">Con todo mi corazón,<br/><em>Alessandro Reyes</em></p>
-        </div>
+      <div class="carta-body">
+        <p class="carta-saludo para-reveal">Papá,</p>
+        <p class="para-reveal">Escribir esta carta no es fácil, porque las palabras nunca parecen ser suficientes para describir todo lo que representas para mí.</p>
+        <p class="para-reveal">Admiro tu forma de ver la vida — siempre encuentras el lado bueno de las cosas, incluso cuando el camino se pone difícil. Esa actitud me ha enseñado más de lo que imaginas.</p>
+        <p class="para-reveal">Admiro cómo nunca nos has faltado. Siempre tienes tiempo para la familia, para escuchar, para abrazar, para estar presente. En un mundo donde muchos padres se ausentan, tú has elegido quedarte, y eso vale más que cualquier cosa.</p>
+        <p class="para-reveal">Admiro el amor con el que tratas a mamá, a mi hermana y a mí. Ese cariño que das sin medirlo, sin condiciones, me ha mostrado lo que significa amar de verdad.</p>
+        <p class="para-reveal">Me enseñaste a seguir a Dios, y esa es la herencia más grande que un padre puede darle a su hijo. Gracias por ponerme sobre tus hombros cuando no podía ver más allá.</p>
+        <p class="para-reveal">Sé que te has sacrificado muchas veces — por nosotros, y especialmente por mí. Quizás no siempre te lo he dicho, pero lo sé, lo siento, y nunca lo voy a olvidar.</p>
+        <p class="para-reveal carta-cierre">Hoy quiero que sepas que soy quien soy gracias a ti. Tu ejemplo vive en mí.<br/><br/>Feliz Día del Padre, Papá. <em>Te amo más de lo que puedo expresar.</em></p>
+        <p class="para-reveal carta-firma">Con todo mi corazón,<br/><strong>Alessandro Reyes</strong></p>
       </div>
     </div>
   </section>
 
-  <!-- ═══ CIERRE ═══ -->
-  <section class="cierre" id="cierre">
+  <!-- ═══════════════════════════════════
+       09. CIERRE
+  ═══════════════════════════════════ -->
+  <section class="cierre section" id="s8" data-section="8">
     <canvas id="heartsCanvas"></canvas>
+    <div class="cierre-bg-text" aria-hidden="true">TE AMO</div>
     <div class="cierre-content">
-      <div class="cierre-icon reveal-up">♡</div>
-      <h2 class="cierre-title reveal-up delay-1">Gracias por todo, Papá.</h2>
-      <p class="cierre-sub reveal-up delay-2">Te amamos hoy, mañana y siempre.</p>
-      <div class="cierre-firma reveal-up delay-3">— Alessandro</div>
-      <p class="bensound-credit">Música: Bensound.com</p>
+      <div class="cierre-heart reveal-el">♡</div>
+      <h2 class="cierre-title reveal-el">Gracias por todo,<br/><em>Papá.</em></h2>
+      <p class="cierre-sub reveal-el">Te amamos hoy, mañana y siempre.</p>
+      <div class="cierre-firma reveal-el">— Alessandro</div>
     </div>
+    <p class="bensound" aria-label="Crédito de música">Música: Bensound.com</p>
   </section>
 
-  <!-- GSAP + ScrollTrigger + Lenis -->
   <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/SplitText.min.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
