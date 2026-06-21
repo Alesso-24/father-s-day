@@ -535,8 +535,7 @@ img { display: block; width: 100%; height: 100%; object-fit: cover; image-orient
   border-radius: 2px;
   cursor: pointer;
 }
-.fm-item.tall { grid-row: span 2; }
-.fm-item.wide { grid-column: span 2; }
+/* placement controlled via inline style on each item */
 .fm-item img { transition: transform 0.8s var(--ease); }
 .fm-item:hover img { transform: scale(1.06); }
 
@@ -940,11 +939,13 @@ img { display: block; width: 100%; height: 100%; object-fit: cover; image-orient
 
   .familia-masonry {
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: repeat(3, 220px);
     grid-auto-rows: 220px;
   }
-  .fm-item.tall { grid-row: span 1; }
-  .fm-item.wide { grid-column: 1 / -1; }
+  /* Reset explicit placement — 2-col auto flow en tablet */
+  .familia-masonry .fm-item {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
 
   .momentos-grid { grid-template-columns: 1fr 1fr; }
   .momento-item { height: 260px; }
@@ -976,7 +977,7 @@ img { display: block; width: 100%; height: 100%; object-fit: cover; image-orient
     grid-template-columns: 1fr;
     grid-auto-rows: 240px;
   }
-  .fm-item, .fm-item.tall, .fm-item.wide {
+  .familia-masonry .fm-item {
     grid-column: 1 !important;
     grid-row: auto !important;
     height: 240px;
