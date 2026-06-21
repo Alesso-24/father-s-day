@@ -160,6 +160,11 @@ img { display: block; width: 100%; height: 100%; object-fit: cover; image-orient
   transition: background 0.3s, color 0.3s, transform 0.25s;
 }
 .music-btn:hover { background: var(--gold); color: var(--white); transform: scale(1.1); }
+.music-btn.btn-loading { animation: music-loading 0.7s ease-in-out infinite; pointer-events: none; }
+@keyframes music-loading {
+  0%, 100% { opacity: 0.45; transform: scale(0.95); }
+  50%       { opacity: 1;    transform: scale(1.05); }
+}
 .music-icon { width: 20px; height: 20px; }
 .hidden { display: none !important; }
 

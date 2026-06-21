@@ -532,8 +532,8 @@ function setupCierre() {
 }
 
 /* ═══════════════════════════════════════════
-   18. MÚSICA — piano ambiental generativo (Tone.js)
-   Progresión cálida en Do mayor / La menor
+   18. MÚSICA — Salamander Grand Piano (muestras reales)
+   Ballad emotiva: C → Am → F → G, 48 BPM
 ═══════════════════════════════════════════ */
 function setupMusic() {
   const btn   = document.getElementById('musicBtn');
@@ -541,64 +541,136 @@ function setupMusic() {
   const pause = btn?.querySelector('.pause-icon');
   if (!btn || typeof Tone === 'undefined') return;
 
-  let ready   = false;
-  let playing = false;
-  let synth, loop;
+  let playing  = false;
+  let loading  = false;
+  let built    = false;
+  let sampler, padSynth, masterVol;
 
-  function initAudio() {
-    if (ready) return;
-    ready = true;
+  async function buildChain() {
+    if (built) return;
+    built = true;
 
-    // Reverb grande para efecto sala / catedral
-    const reverb = new Tone.Reverb({ decay: 9, wet: 0.65 });
-    // Delay suave para profundidad
-    const delay  = new Tone.FeedbackDelay({ delayTime: '8n', feedback: 0.22, wet: 0.18 });
-    // Volumen maestro
-    const vol    = new Tone.Volume(-16).toDestination();
+    /* ── Cadena de efectos ── */
+    masterVol = new Tone.Volume(-9).toDestination();
+    const limiter = new Tone.Limiter(-3);
+    limiter.connect(masterVol);
 
-    reverb.connect(vol);
+    const reverb = new Tone.Reverb({ decay: 10, wet: 0.52 });
+    await reverb.ready;
+    reverb.connect(limiter);
+
+    const delay = new Tone.FeedbackDelay({ delayTime: '8n.', feedback: 0.16, wet: 0.12 });
     delay.connect(reverb);
 
-    // Sintetizador tipo piano suave
-    synth = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type: 'triangle' },
-      envelope:   { attack: 0.5, decay: 1.2, sustain: 0.55, release: 5 },
+    /* ── Pad de cuerdas suaves (sintetizado, debajo del piano) ── */
+    const padReverb = new Tone.Reverb({ decay: 14, wet: 0.75 });
+    await padReverb.ready;
+    padReverb.connect(limiter);
+
+    padSynth = new Tone.PolySynth(Tone.Synth, {
+      oscillator: { type: 'sine' },
+      envelope: { attack: 3.5, decay: 1, sustain: 0.8, release: 9 },
+      volume: -22,
+    }).connect(padReverb);
+
+    /* ── Sampler: Salamander Grand Piano (notas reales grabadas) ── */
+    sampler = new Tone.Sampler({
+      urls: {
+        A0: 'A0.mp3', C1: 'C1.mp3',
+        'D#1': 'Ds1.mp3', 'F#1': 'Fs1.mp3', A1: 'A1.mp3', C2: 'C2.mp3',
+        'D#2': 'Ds2.mp3', 'F#2': 'Fs2.mp3', A2: 'A2.mp3', C3: 'C3.mp3',
+        'D#3': 'Ds3.mp3', 'F#3': 'Fs3.mp3', A3: 'A3.mp3', C4: 'C4.mp3',
+        'D#4': 'Ds4.mp3', 'F#4': 'Fs4.mp3', A4: 'A4.mp3', C5: 'C5.mp3',
+        'D#5': 'Ds5.mp3', 'F#5': 'Fs5.mp3', A5: 'A5.mp3', C6: 'C6.mp3',
+        'D#6': 'Ds6.mp3', 'F#6': 'Fs6.mp3', A6: 'A6.mp3', C7: 'C7.mp3',
+        A7: 'A7.mp3', C8: 'C8.mp3',
+      },
+      release: 2.5,
+      baseUrl: 'https://tonejs.github.io/audio/salamander/',
     }).connect(delay);
 
-    // Progresión Do - Sol - La m - Fa  (la progresión más emotiva del mundo 🎵)
-    const chords = [
-      ['C4', 'E4', 'G4', 'C5'],
-      ['G3', 'B3', 'D4', 'G4'],
-      ['A3', 'C4', 'E4', 'A4'],
-      ['F3', 'A3', 'C4', 'F4'],
+    /* Esperar a que carguen todas las muestras */
+    await Tone.loaded();
+
+    /* ── Arreglo: ballad en C mayor / La menor ─────────────────
+       Progresión: C  →  Am  →  F  →  G
+       Patrón por compás:
+         beat 1:   bajo + acorde amplio
+         beat 2.5: nota media interior (inner voice)
+         beat 3:   melodía aguda
+         beat 4:   nota de paso
+    ─────────────────────────────────────────────────────────── */
+    const harmony = [
+      {
+        pad:    ['C3', 'G3', 'E4'],
+        bass:   'C2',
+        chord:  [['G3','E4','G4'], ['E4'], ['C5'], ['G4']],
+      },
+      {
+        pad:    ['A2', 'E3', 'C4'],
+        bass:   'A2',
+        chord:  [['E3','C4','E4'], ['C4'], ['A4'], ['E4']],
+      },
+      {
+        pad:    ['F2', 'C3', 'A3'],
+        bass:   'F2',
+        chord:  [['C3','A3','C4'], ['A3'], ['F4'], ['C4']],
+      },
+      {
+        pad:    ['G2', 'D3', 'B3'],
+        bass:   'G2',
+        chord:  [['D3','B3','D4'], ['B3'], ['G4'], ['D4']],
+      },
     ];
-    let i = 0;
 
-    loop = new Tone.Loop(time => {
-      const chord = chords[i % chords.length];
-      // Toca las notas con pequeño arpeggio para que suene más orgánico
-      chord.forEach((note, ni) => {
-        synth.triggerAttackRelease(note, '1n', time + ni * 0.06, 0.28);
+    let bar = 0;
+    const q = () => Tone.Time('4n').toSeconds();
+
+    const loop = new Tone.Loop(time => {
+      const h = harmony[bar % 4];
+
+      /* Pad (cuerdas debajo) — ataque largo, suena lleno */
+      padSynth.triggerAttackRelease(h.pad, '1m', time, 0.7);
+
+      /* Bajo: beat 1, velocity un poco más fuerte */
+      sampler.triggerAttackRelease(h.bass, '2n', time, 0.55 + Math.random() * 0.06);
+
+      /* Acorde y melodía: 4 eventos distribuidos en el compás */
+      h.chord.forEach((notes, step) => {
+        const stepTime = time + q() * step + (Math.random() * 0.02 - 0.01);
+        const vel = step === 0 ? 0.38 + Math.random() * 0.06
+                  : step === 2 ? 0.42 + Math.random() * 0.07
+                  : 0.28 + Math.random() * 0.06;
+        notes.forEach((n, ni) => {
+          sampler.triggerAttackRelease(n, '2n', stepTime + ni * 0.04, vel);
+        });
       });
-      i++;
-    }, '1m'); // Cada compás (a 50 BPM ≈ 4.8 s)
 
-    Tone.Transport.bpm.value = 50;
+      bar++;
+    }, '1m');
+
+    Tone.Transport.bpm.value = 48;
     loop.start(0);
   }
 
   btn.addEventListener('click', async () => {
-    await Tone.start(); // requerido por política de autoplay
-    initAudio();
+    if (loading) return;
 
     if (!playing) {
+      loading = true;
+      btn.classList.add('btn-loading');
+      await Tone.start();
+      await buildChain();
+      btn.classList.remove('btn-loading');
+      loading = false;
       Tone.Transport.start();
+      masterVol.volume.rampTo(-9, 1.5);
       playing = true;
       play.classList.add('hidden');
       pause.classList.remove('hidden');
     } else {
-      // Fade out en 2s antes de parar
-      Tone.Transport.stop();
+      masterVol.volume.rampTo(-60, 1.8);
+      setTimeout(() => Tone.Transport.stop(), 1900);
       playing = false;
       play.classList.remove('hidden');
       pause.classList.add('hidden');
