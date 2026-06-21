@@ -6,6 +6,32 @@
 gsap.registerPlugin(ScrollTrigger);
 
 /* ═══════════════════════════════════════════
+   YOUTUBE IFRAME API — global (debe estar antes de cargar el script)
+═══════════════════════════════════════════ */
+let _ytPlayer = null;
+let _ytPlayerReady = false;
+let _ytPendingPlay = false;
+
+window.onYouTubeIframeAPIReady = function () {
+  _ytPlayer = new YT.Player('ytPlayerEl', {
+    videoId: '8MV_hM0XeAU',       /* Samy Galí — ALBUM COMPLETO: Sonidos al Cielo Vol.1 */
+    playerVars: {
+      autoplay:        0,
+      controls:        1,          /* controles visibles — requerido por ToS de YouTube */
+      rel:             0,
+      modestbranding:  1,
+      iv_load_policy:  3,
+    },
+    events: {
+      onReady() {
+        _ytPlayerReady = true;
+        if (_ytPendingPlay) { _ytPlayer.playVideo(); _ytPendingPlay = false; }
+      },
+    },
+  });
+};
+
+/* ═══════════════════════════════════════════
    1. LENIS SMOOTH SCROLL
 ═══════════════════════════════════════════ */
 const lenis = new Lenis({
@@ -532,149 +558,53 @@ function setupCierre() {
 }
 
 /* ═══════════════════════════════════════════
-   18. MÚSICA — Salamander Grand Piano (muestras reales)
-   Ballad emotiva: C → Am → F → G, 48 BPM
+   18. MÚSICA — YouTube IFrame (Samy Galí)
+   Carga el álbum "Sonidos al Cielo Vol.1" completo
 ═══════════════════════════════════════════ */
 function setupMusic() {
-  const btn   = document.getElementById('musicBtn');
-  const play  = btn?.querySelector('.play-icon');
-  const pause = btn?.querySelector('.pause-icon');
-  if (!btn || typeof Tone === 'undefined') return;
+  const btn      = document.getElementById('musicBtn');
+  const player   = document.getElementById('musicPlayer');
+  const closeBtn = document.getElementById('mpClose');
+  const play     = btn?.querySelector('.play-icon');
+  const pause    = btn?.querySelector('.pause-icon');
+  if (!btn || !player) return;
 
-  let playing  = false;
-  let loading  = false;
-  let built    = false;
-  let sampler, padSynth, masterVol;
+  let playing = false;
 
-  async function buildChain() {
-    if (built) return;
-    built = true;
+  /* Cargar YouTube IFrame API dinámicamente */
+  const ytTag = document.createElement('script');
+  ytTag.src   = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(ytTag);
 
-    /* ── Cadena de efectos ── */
-    masterVol = new Tone.Volume(-9).toDestination();
-    const limiter = new Tone.Limiter(-3);
-    limiter.connect(masterVol);
-
-    const reverb = new Tone.Reverb({ decay: 10, wet: 0.52 });
-    await reverb.ready;
-    reverb.connect(limiter);
-
-    const delay = new Tone.FeedbackDelay({ delayTime: '8n.', feedback: 0.16, wet: 0.12 });
-    delay.connect(reverb);
-
-    /* ── Pad de cuerdas suaves (sintetizado, debajo del piano) ── */
-    const padReverb = new Tone.Reverb({ decay: 14, wet: 0.75 });
-    await padReverb.ready;
-    padReverb.connect(limiter);
-
-    padSynth = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type: 'sine' },
-      envelope: { attack: 3.5, decay: 1, sustain: 0.8, release: 9 },
-      volume: -22,
-    }).connect(padReverb);
-
-    /* ── Sampler: Salamander Grand Piano (notas reales grabadas) ── */
-    sampler = new Tone.Sampler({
-      urls: {
-        A0: 'A0.mp3', C1: 'C1.mp3',
-        'D#1': 'Ds1.mp3', 'F#1': 'Fs1.mp3', A1: 'A1.mp3', C2: 'C2.mp3',
-        'D#2': 'Ds2.mp3', 'F#2': 'Fs2.mp3', A2: 'A2.mp3', C3: 'C3.mp3',
-        'D#3': 'Ds3.mp3', 'F#3': 'Fs3.mp3', A3: 'A3.mp3', C4: 'C4.mp3',
-        'D#4': 'Ds4.mp3', 'F#4': 'Fs4.mp3', A4: 'A4.mp3', C5: 'C5.mp3',
-        'D#5': 'Ds5.mp3', 'F#5': 'Fs5.mp3', A5: 'A5.mp3', C6: 'C6.mp3',
-        'D#6': 'Ds6.mp3', 'F#6': 'Fs6.mp3', A6: 'A6.mp3', C7: 'C7.mp3',
-        A7: 'A7.mp3', C8: 'C8.mp3',
-      },
-      release: 2.5,
-      baseUrl: 'https://tonejs.github.io/audio/salamander/',
-    }).connect(delay);
-
-    /* Esperar a que carguen todas las muestras */
-    await Tone.loaded();
-
-    /* ── Arreglo: ballad en C mayor / La menor ─────────────────
-       Progresión: C  →  Am  →  F  →  G
-       Patrón por compás:
-         beat 1:   bajo + acorde amplio
-         beat 2.5: nota media interior (inner voice)
-         beat 3:   melodía aguda
-         beat 4:   nota de paso
-    ─────────────────────────────────────────────────────────── */
-    const harmony = [
-      {
-        pad:    ['C3', 'G3', 'E4'],
-        bass:   'C2',
-        chord:  [['G3','E4','G4'], ['E4'], ['C5'], ['G4']],
-      },
-      {
-        pad:    ['A2', 'E3', 'C4'],
-        bass:   'A2',
-        chord:  [['E3','C4','E4'], ['C4'], ['A4'], ['E4']],
-      },
-      {
-        pad:    ['F2', 'C3', 'A3'],
-        bass:   'F2',
-        chord:  [['C3','A3','C4'], ['A3'], ['F4'], ['C4']],
-      },
-      {
-        pad:    ['G2', 'D3', 'B3'],
-        bass:   'G2',
-        chord:  [['D3','B3','D4'], ['B3'], ['G4'], ['D4']],
-      },
-    ];
-
-    let bar = 0;
-    const q = () => Tone.Time('4n').toSeconds();
-
-    const loop = new Tone.Loop(time => {
-      const h = harmony[bar % 4];
-
-      /* Pad (cuerdas debajo) — ataque largo, suena lleno */
-      padSynth.triggerAttackRelease(h.pad, '1m', time, 0.7);
-
-      /* Bajo: beat 1, velocity un poco más fuerte */
-      sampler.triggerAttackRelease(h.bass, '2n', time, 0.55 + Math.random() * 0.06);
-
-      /* Acorde y melodía: 4 eventos distribuidos en el compás */
-      h.chord.forEach((notes, step) => {
-        const stepTime = time + q() * step + (Math.random() * 0.02 - 0.01);
-        const vel = step === 0 ? 0.38 + Math.random() * 0.06
-                  : step === 2 ? 0.42 + Math.random() * 0.07
-                  : 0.28 + Math.random() * 0.06;
-        notes.forEach((n, ni) => {
-          sampler.triggerAttackRelease(n, '2n', stepTime + ni * 0.04, vel);
-        });
-      });
-
-      bar++;
-    }, '1m');
-
-    Tone.Transport.bpm.value = 48;
-    loop.start(0);
+  function doPlay() {
+    if (_ytPlayerReady) {
+      _ytPlayer.playVideo();
+    } else {
+      _ytPendingPlay = true;
+    }
   }
 
-  btn.addEventListener('click', async () => {
-    if (loading) return;
-
+  btn.addEventListener('click', () => {
     if (!playing) {
-      loading = true;
-      btn.classList.add('btn-loading');
-      await Tone.start();
-      await buildChain();
-      btn.classList.remove('btn-loading');
-      loading = false;
-      Tone.Transport.start();
-      masterVol.volume.rampTo(-9, 1.5);
+      player.classList.add('visible');
+      doPlay();
       playing = true;
       play.classList.add('hidden');
       pause.classList.remove('hidden');
     } else {
-      masterVol.volume.rampTo(-60, 1.8);
-      setTimeout(() => Tone.Transport.stop(), 1900);
+      _ytPlayer?.pauseVideo();
       playing = false;
       play.classList.remove('hidden');
       pause.classList.add('hidden');
     }
+  });
+
+  closeBtn?.addEventListener('click', () => {
+    _ytPlayer?.pauseVideo();
+    player.classList.remove('visible');
+    playing = false;
+    play.classList.remove('hidden');
+    pause.classList.add('hidden');
   });
 }
 
