@@ -525,7 +525,7 @@ img { display: block; width: 100%; height: 100%; object-fit: cover; image-orient
 .familia-masonry {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: 300px 300px;
+  grid-auto-rows: 300px;
   gap: 8px;
   padding: 0 clamp(16px, 3vw, 40px);
 }
@@ -865,7 +865,47 @@ img { display: block; width: 100%; height: 100%; object-fit: cover; image-orient
 }
 
 /* ══════════════════════════════════════════════════
-   RESPONSIVE
+   HORIZONTAL SCROLL — MOBILE STACK
+   ══════════════════════════════════════════════════ */
+.h-scroll-section.mobile-stack {
+  height: auto;
+  overflow: visible;
+}
+.h-scroll-section.mobile-stack .h-panels-wrapper {
+  flex-direction: column;
+  width: 100% !important;
+  transform: none !important;
+}
+.h-scroll-section.mobile-stack .h-panel {
+  width: 100%;
+  height: 85svh;
+  min-height: 380px;
+}
+.h-scroll-section.mobile-stack .h-title-fixed {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(26,10,2,0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 14px 24px;
+  z-index: 10;
+}
+.h-scroll-section.mobile-stack .h-panel-caption {
+  bottom: 36px;
+  left: 24px;
+  right: 24px;
+}
+.h-scroll-section.mobile-stack .h-cap-num,
+.h-scroll-section.mobile-stack .h-panel-caption h3 {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE — TABLET (≤ 900px)
    ══════════════════════════════════════════════════ */
 @media (max-width: 900px) {
   .hero {
@@ -876,7 +916,7 @@ img { display: block; width: 100%; height: 100%; object-fit: cover; image-orient
     padding: 100px 28px 40px;
     align-items: flex-start;
   }
-  .hero-right { height: 55vh; }
+  .hero-right { height: 55svh; }
   .hero-right-overlay {
     background: linear-gradient(to bottom, var(--cream) 0%, transparent 40%),
                 linear-gradient(to top, rgba(42,18,6,0.4) 0%, transparent 60%);
@@ -890,50 +930,84 @@ img { display: block; width: 100%; height: 100%; object-fit: cover; image-orient
     gap: 24px;
   }
   .admiro-num-wrap { writing-mode: horizontal-tb; }
-  .admiro-photo-wrap { height: 280px; margin: 0; }
+  .admiro-photo-wrap { height: 300px; margin: 0; overflow: hidden; }
 
-  .pareja-inner { grid-template-columns: 1fr; }
+  .pareja-inner { grid-template-columns: 1fr; gap: 40px; }
   .pareja-photos { grid-template-columns: 1fr 1fr; }
   .pareja-photo { display: none; }
   .pareja-photo:nth-child(-n+2) { display: block; }
-  .pareja-photo img { height: 280px; }
+  .pareja-photo img { height: 260px; }
 
   .familia-masonry {
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: repeat(4, 200px);
+    grid-template-rows: repeat(3, 220px);
+    grid-auto-rows: 220px;
   }
   .fm-item.tall { grid-row: span 1; }
   .fm-item.wide { grid-column: 1 / -1; }
 
-  .momentos-grid { grid-template-columns: 1fr; }
-  .momento-item { height: 280px; }
+  .momentos-grid { grid-template-columns: 1fr 1fr; }
+  .momento-item { height: 260px; }
   .momento-label { translate: 0 0; }
 
   .carta-inner { grid-template-columns: 1fr; gap: 32px; }
   .carta-meta { position: relative; top: 0; }
 
   .nav-dots { display: none; }
+  .cursor, .cursor-ring { display: none; }
 }
 
-@media (max-width: 540px) {
+/* ══════════════════════════════════════════════════
+   RESPONSIVE — MOBILE (≤ 600px)
+   ══════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .hero-title {
+    font-size: clamp(3.5rem, 20vw, 7rem);
+  }
+  .hero-right { height: 45svh; }
+
+  .section-title-lg {
+    font-size: clamp(2rem, 9vw, 3.5rem);
+  }
+
+  .admiro-photo-wrap { height: 240px; }
+
   .familia-masonry {
     grid-template-columns: 1fr;
-    grid-template-rows: auto;
+    grid-auto-rows: 240px;
   }
   .fm-item, .fm-item.tall, .fm-item.wide {
-    grid-column: 1 !important; grid-row: auto !important;
+    grid-column: 1 !important;
+    grid-row: auto !important;
     height: 240px;
   }
+
+  .momentos-grid { grid-template-columns: 1fr; }
+  .momento-item { height: 260px; }
+
   .pareja-photos { grid-template-columns: 1fr; }
   .pareja-photo:nth-child(n+2) { display: none; }
-  .pareja-photo img { height: 300px; }
+  .pareja-photo img { height: 280px; }
+
+  .pareja-copy { max-width: 100%; }
+
+  .carta-inner { padding: 0 4px; }
+
+  .cierre-bg-text { font-size: clamp(5rem, 25vw, 14rem); }
+
+  .music-btn { bottom: 16px; right: 16px; }
 }
 
-/* Reduced motion */
+/* ══════════════════════════════════════════════════
+   REDUCED MOTION
+   ══════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
   .clip-reveal { clip-path: none !important; }
+  .bw-text { transform: none !important; }
+  .para-reveal { opacity: 1 !important; transform: none !important; }
+  .admiro-heading, .admiro-copy p { opacity: 1 !important; transform: none !important; }
 }
