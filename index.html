@@ -54,6 +54,14 @@
     <svg class="music-icon play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
     <svg class="music-icon pause-icon hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
   </button>
+  <!-- MUSIC HINT — aparece 2s después del load, desaparece solo o al hacer click -->
+  <div class="music-hint" id="musicHint" aria-hidden="true">
+    <span class="music-hint__text">toca para la música</span>
+    <svg class="music-hint__arrow" viewBox="0 0 18 28" fill="none" aria-hidden="true">
+      <path d="M9 26 C9 18 9 12 9 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M4 10 L9 4 L14 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
   <!-- YouTube player oculto — audio de fondo (No Hay Lugar Más Alto · Samy Galí) -->
   <!-- opacity:0 pero en el DOM con tamaño real = funciona en iOS Safari -->
   <div id="ytWrap" style="position:fixed;top:0;left:0;width:200px;height:200px;opacity:0;pointer-events:none;z-index:-1;" aria-hidden="true">

@@ -168,6 +168,63 @@ img { display: block; width: 100%; height: 100%; object-fit: cover; image-orient
 .music-icon { width: 20px; height: 20px; }
 .hidden { display: none !important; }
 
+/* ══════════════════════════════════════════════════
+   MUSIC HINT — tooltip animado (desktop: debajo, mobile: encima)
+   ══════════════════════════════════════════════════ */
+.music-hint {
+  position: fixed;
+  top: 80px; right: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+  opacity: 0;              /* GSAP lo muestra */
+  z-index: 901;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.45));
+}
+.music-hint__text {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--gold-lt);
+  white-space: nowrap;
+  background: rgba(20, 8, 2, 0.82);
+  border: 1px solid rgba(191,138,66,0.35);
+  border-radius: 20px;
+  padding: 5px 12px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.music-hint__arrow {
+  width: 18px; height: 28px;
+  color: var(--gold);
+  animation: hint-bounce 1.3s ease-in-out infinite;
+}
+@keyframes hint-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+/* Mobile: botón está en bottom-right, hint aparece ENCIMA */
+@media (max-width: 600px) {
+  .music-hint {
+    top: auto;
+    bottom: 70px;
+    right: 6px;
+    flex-direction: column-reverse; /* texto arriba, flecha abajo apuntando al botón */
+  }
+  .music-hint__arrow {
+    transform-origin: center;
+    transform: scaleY(-1);       /* flecha apunta hacia abajo */
+    animation: hint-bounce-down 1.3s ease-in-out infinite;
+  }
+}
+@keyframes hint-bounce-down {
+  0%, 100% { transform: scaleY(-1) translateY(0); }
+  50%       { transform: scaleY(-1) translateY(-6px); }
+}
+
 
 /* ══════════════════════════════════════════════════
    01. HERO
