@@ -587,22 +587,21 @@ function setupMusic() {
   const pause = btn?.querySelector('.pause-icon');
   if (!btn) return;
 
-  /* ── Hint: aparece a los 2s, desaparece a los 7s ── */
+  /* ── Hint: entra desde la izquierda a los 2s, desaparece a los 6.5s ── */
   if (hint) {
     const hintTl = gsap.timeline({ delay: 2 })
       .fromTo(hint,
-        { opacity: 0, y: -10 },
-        { opacity: 1, y: 0, duration: 0.65, ease: 'power2.out' }
+        { opacity: 0, x: -14 },
+        { opacity: 1, x: 0, duration: 0.7, ease: 'power2.out' }
       )
       .to(hint,
-        { opacity: 0, y: -10, duration: 0.55, ease: 'power2.in' },
-        '+=4.5'   /* visible durante 4.5s */
+        { opacity: 0, x: -10, duration: 0.5, ease: 'power2.in' },
+        '+=4'
       );
 
-    /* Desaparecer inmediatamente si el usuario hace click */
     btn.addEventListener('click', () => {
       hintTl.kill();
-      gsap.to(hint, { opacity: 0, y: -10, scale: 0.9, duration: 0.25, ease: 'power2.in' });
+      gsap.to(hint, { opacity: 0, x: -10, duration: 0.2, ease: 'power2.in' });
     }, { once: true });
   }
 

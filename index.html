@@ -54,12 +54,13 @@
     <svg class="music-icon play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
     <svg class="music-icon pause-icon hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
   </button>
-  <!-- MUSIC HINT — aparece 2s después del load, desaparece solo o al hacer click -->
+  <!-- MUSIC HINT -->
   <div class="music-hint" id="musicHint" aria-hidden="true">
     <span class="music-hint__text">toca para la música</span>
-    <svg class="music-hint__arrow" viewBox="0 0 18 28" fill="none" aria-hidden="true">
-      <path d="M9 26 C9 18 9 12 9 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-      <path d="M4 10 L9 4 L14 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Flecha curva apuntando hacia la derecha (hacia el botón) — solo desktop -->
+    <svg class="music-hint__arrow" viewBox="0 0 36 18" width="36" height="18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M2 13 Q 14 2 30 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M26 5 L34 9 L26 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </div>
   <!-- YouTube player oculto — audio de fondo (No Hay Lugar Más Alto · Samy Galí) -->

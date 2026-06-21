@@ -169,60 +169,61 @@ img { display: block; width: 100%; height: 100%; object-fit: cover; image-orient
 .hidden { display: none !important; }
 
 /* ══════════════════════════════════════════════════
-   MUSIC HINT — tooltip animado (desktop: debajo, mobile: encima)
+   MUSIC HINT
+   Desktop: texto + flecha a la izquierda del botón, apuntando al botón →
+   Mobile:  solo texto pequeño, sin flecha, encima del botón
    ══════════════════════════════════════════════════ */
 .music-hint {
   position: fixed;
-  top: 80px; right: 6px;
+  /* alineado verticalmente con el botón (top:24px, h:44px → centro ≈ 46px) */
+  top: 30px;
+  /* botón en right:24px + 44px de ancho + 12px gap = right:80px */
+  right: 80px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   pointer-events: none;
-  opacity: 0;              /* GSAP lo muestra */
+  opacity: 0;
   z-index: 901;
-  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.45));
+  white-space: nowrap;
 }
 .music-hint__text {
   font-family: var(--f-serif);
   font-style: italic;
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
+  font-size: 0.78rem;
+  letter-spacing: 0.07em;
   color: var(--gold-lt);
-  white-space: nowrap;
-  background: rgba(20, 8, 2, 0.82);
-  border: 1px solid rgba(191,138,66,0.35);
-  border-radius: 20px;
-  padding: 5px 12px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  text-shadow: 0 2px 14px rgba(0,0,0,0.65);
 }
 .music-hint__arrow {
-  width: 18px; height: 28px;
+  /* width/height explícitos en el HTML también */
+  width: 36px; height: 18px;
+  flex-shrink: 0;
   color: var(--gold);
-  animation: hint-bounce 1.3s ease-in-out infinite;
+  animation: hint-nudge 1.5s ease-in-out infinite;
 }
-@keyframes hint-bounce {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-6px); }
+@keyframes hint-nudge {
+  0%, 100% { transform: translateX(0);   }
+  50%       { transform: translateX(5px); }
 }
-/* Mobile: botón está en bottom-right, hint aparece ENCIMA */
+
+/* ── Mobile ────────────────────────────────────── */
 @media (max-width: 600px) {
   .music-hint {
+    /* botón en bottom:16px, height:44px → encima queda en bottom:70px */
     top: auto;
     bottom: 70px;
-    right: 6px;
-    flex-direction: column-reverse; /* texto arriba, flecha abajo apuntando al botón */
+    right: 8px;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
   }
-  .music-hint__arrow {
-    transform-origin: center;
-    transform: scaleY(-1);       /* flecha apunta hacia abajo */
-    animation: hint-bounce-down 1.3s ease-in-out infinite;
+  .music-hint__text {
+    font-size: 0.66rem;
+    letter-spacing: 0.05em;
   }
-}
-@keyframes hint-bounce-down {
-  0%, 100% { transform: scaleY(-1) translateY(0); }
-  50%       { transform: scaleY(-1) translateY(-6px); }
+  /* Sin flecha en mobile — evita problemas de escala SVG */
+  .music-hint__arrow { display: none; }
 }
 
 
