@@ -5,6 +5,50 @@
 
 gsap.registerPlugin(ScrollTrigger);
 
+/* ═══════════════════════════════════════════
+   YOUTUBE IFRAME API — globals
+   onYouTubeIframeAPIReady debe estar definido ANTES de que
+   el script de YouTube llame al callback (lo carga index.html al final)
+═══════════════════════════════════════════ */
+let _ytPlayer   = null;
+let _ytReady    = false;
+let _ytPending  = false;  // true si el usuario hizo click antes de que la API esté lista
+
+window.onYouTubeIframeAPIReady = function () {
+  _ytPlayer = new YT.Player('ytPlayerEl', {
+    width:  '200',
+    height: '200',
+    videoId: 'mQzbrK5mVpU',           /* "No Hay Lugar Más Alto" — Samy Galí */
+    playerVars: {
+      autoplay:       0,
+      controls:       0,
+      loop:           1,
+      playlist:       'mQzbrK5mVpU',  /* requerido para que loop funcione */
+      rel:            0,
+      modestbranding: 1,
+      iv_load_policy: 3,
+      fs:             0,
+      enablejsapi:    1,
+    },
+    events: {
+      onReady: function (e) {
+        _ytReady = true;
+        e.target.setVolume(70);
+        if (_ytPending) {
+          /* el usuario ya había clickeado — reproducir ahora */
+          e.target.playVideo();
+          _ytPending = false;
+        }
+      },
+      onError: function (e) {
+        /* si el video falla, ocultar el botón de música */
+        const btn = document.getElementById('musicBtn');
+        if (btn) { btn.style.display = 'none'; }
+      },
+    },
+  });
+};
+
 
 /* ═══════════════════════════════════════════
    1. LENIS SMOOTH SCROLL
@@ -534,53 +578,32 @@ function setupCierre() {
 
 /* ═══════════════════════════════════════════
    18. MÚSICA — No Hay Lugar Más Alto · Samy Galí
-   <audio> puro: funciona en todos los dispositivos sin video
+   YouTube IFrame API: iframe 200x200 en DOM (opacity:0) = funciona en iOS Safari
 ═══════════════════════════════════════════ */
 function setupMusic() {
   const btn   = document.getElementById('musicBtn');
-  const audio = document.getElementById('bgMusic');
   const play  = btn?.querySelector('.play-icon');
   const pause = btn?.querySelector('.pause-icon');
-  if (!btn || !audio) return;
-
-  /* Ocultar botón si el archivo no está disponible */
-  audio.addEventListener('error', () => {
-    btn.style.opacity = '0.3';
-    btn.title = 'Archivo de música no encontrado';
-  }, { once: true });
+  if (!btn) return;
 
   let playing = false;
 
-  btn.addEventListener('click', async () => {
+  btn.addEventListener('click', () => {
     if (!playing) {
-      try {
-        await audio.play();
-        playing = true;
-        play.classList.add('hidden');
-        pause.classList.remove('hidden');
-        /* Fade in suave */
-        audio.volume = 0;
-        let v = 0;
-        const fadeIn = setInterval(() => {
-          v = Math.min(1, v + 0.04);
-          audio.volume = v;
-          if (v >= 1) clearInterval(fadeIn);
-        }, 60);
-      } catch (e) { /* autoplay bloqueado o archivo faltante */ }
+      if (_ytReady) {
+        _ytPlayer.playVideo();
+      } else {
+        /* API aún cargando: reproducir en cuanto esté lista */
+        _ytPending = true;
+      }
+      playing = true;
+      play.classList.add('hidden');
+      pause.classList.remove('hidden');
     } else {
-      /* Fade out suave antes de pausar */
-      let v = audio.volume;
-      const fadeOut = setInterval(() => {
-        v = Math.max(0, v - 0.06);
-        audio.volume = v;
-        if (v <= 0) {
-          clearInterval(fadeOut);
-          audio.pause();
-          playing = false;
-          play.classList.remove('hidden');
-          pause.classList.add('hidden');
-        }
-      }, 60);
+      _ytPlayer?.pauseVideo();
+      playing = false;
+      play.classList.remove('hidden');
+      pause.classList.add('hidden');
     }
   });
 }
