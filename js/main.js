@@ -218,6 +218,7 @@ function setupHorizontalScroll() {
   /* Activate first panel immediately */
   panels[0].classList.add('in-view');
   panels[0].querySelector('.h-panel-img img').classList.add('active');
+  if (counter) counter.textContent = '01';
 
   const totalScroll = wrapper.scrollWidth - window.innerWidth;
 
